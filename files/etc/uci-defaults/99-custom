@@ -2,7 +2,7 @@
 # 设置变量
 wlan_name0="Redmi_255E"
 wlan_name1="Redmi_255E_5G"
-wlan_password="13595751450"
+wlan_password="12345678"
 lan_ip_address="192.168.31.1"
 #root_password=""
 #pppoe_username=" "
