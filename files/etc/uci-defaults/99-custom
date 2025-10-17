@@ -1,62 +1,101 @@
 #!/bin/sh
-# 设置变量
-wlan_name0="Redmi_255E"
-wlan_name1="Redmi_255E_5G"
-wlan_password="12345678"
-lan_ip_address="192.168.31.1"
-#root_password=""
-#pppoe_username=" "
-#pppoe_password=" "
-#hostname="ImmortalRouter"
-# 设置管理员密码
-:<<EOF
+# === 自动化 OpenWrt 首次配置脚本 ===
+
+# === 用户自定义变量 ===
+wlan_name0="MyWiFi_2.4G"
+wlan_name1="MyWiFi_5G"
+wlan_password="mypassword"     # 至少 8 位，留空为无密码
+root_password="admin123"       # 管理员密码，留空则不修改
+lan_ip_address="192.168.1.1"
+pppoe_username="user123"
+pppoe_password="pass123"
+hostname="ImmortalWrt"
+
+echo "开始执行首次配置脚本..."
+
+# === 设置管理员密码 ===
 if [ -n "$root_password" ]; then
- (echo "$root_password"; sleep 1; echo "$root_password") | passwd > /dev/null
+  (echo "$root_password"; sleep 1; echo "$root_password") | passwd >/dev/null 2>&1
+  echo "管理员密码已设置。"
+else
+  echo "管理员密码未设置（保留默认密码）。"
 fi
-EOF
-# 配置 LAN 网络
+
+# === 配置 LAN 网络 ===
 if [ -n "$lan_ip_address" ]; then
- uci set network.lan.ipaddr="$lan_ip_address"
- uci set network.lan.netmask="255.255.255.0"
- uci commit network
+  uci set network.lan.ipaddr="$lan_ip_address"
+  uci set network.lan.netmask="255.255.255.0"
+  uci commit network
+  echo "LAN 地址设置为 $lan_ip_address"
 fi
-# 配置 Wi-Fi
-if [ -n "$wlan_name0" -a -n "$wlan_password" -a ${#wlan_password} -ge 8 ]; then
- #uci set wireless.radio0.disabled='0'
- #uci set wireless.radio0.htmode='HT40'
- #uci set wireless.radio0.channel='auto'
- uci set wireless.radio1.cell_density='0'
- uci set wireless.default_radio0.ssid="$wlan_name0"
- uci set wireless.default_radio0.encryption='psk2'
- uci set wireless.default_radio0.key="$wlan_password"
+
+# === 配置 Wi-Fi ===
+# 2.4GHz
+if [ -n "$wlan_name0" ]; then
+  uci set wireless.radio0.disabled='0'
+  uci set wireless.radio0.htmode='HT40'
+  uci set wireless.radio0.channel='auto'
+  uci -q delete wireless.default_radio0.encryption
+  uci -q delete wireless.default_radio0.key
+  uci set wireless.default_radio0.ssid="$wlan_name0"
+
+  if [ -n "$wlan_password" ] && [ ${#wlan_password} -ge 8 ]; then
+    uci set wireless.default_radio0.encryption='psk2'
+    uci set wireless.default_radio0.key="$wlan_password"
+    echo "2.4GHz Wi-Fi 已启用，SSID: $wlan_name0（加密）"
+  else
+    uci set wireless.default_radio0.encryption='none'
+    echo "2.4GHz Wi-Fi 已启用，SSID: $wlan_name0（无密码）"
+  fi
 fi
-if [ -n "$wlan_name1" -a -n "$wlan_password" -a ${#wlan_password} -ge 8 ]; then
- #uci set wireless.radio1.disabled='0'
- #uci set wireless.radio1.htmode='VHT80'
- #uci set wireless.radio1.channel='auto'
- uci set wireless.radio1.cell_density='0'
- uci set wireless.default_radio1.ssid="$wlan_name1"
- uci set wireless.default_radio1.encryption='psk2'
- uci set wireless.default_radio1.key="$wlan_password"
+
+# 5GHz
+if [ -n "$wlan_name1" ]; then
+  uci set wireless.radio1.disabled='0'
+  uci set wireless.radio1.htmode='VHT80'
+  uci set wireless.radio1.channel='auto'
+  uci -q delete wireless.default_radio1.encryption
+  uci -q delete wireless.default_radio1.key
+  uci set wireless.default_radio1.ssid="$wlan_name1"
+
+  if [ -n "$wlan_password" ] && [ ${#wlan_password} -ge 8 ]; then
+    uci set wireless.default_radio1.encryption='psk2'
+    uci set wireless.default_radio1.key="$wlan_password"
+    echo "5GHz Wi-Fi 已启用，SSID: $wlan_name1（加密）"
+  else
+    uci set wireless.default_radio1.encryption='none'
+    echo "5GHz Wi-Fi 已启用，SSID: $wlan_name1（无密码）"
+  fi
 fi
+
 uci commit wireless
-# 配置 PPPoE 拨号
-:<<EOF
-if [ -n "$pppoe_username" -a -n "$pppoe_password" ]; then
- uci set network.wan.proto='pppoe'
- uci set network.wan.username="$pppoe_username"
- uci set network.wan.password="$pppoe_password"
- uci commit network
+
+# === 配置 PPPoE 拨号 ===
+if [ -n "$pppoe_username" ] && [ -n "$pppoe_password" ]; then
+  uci set network.wan.proto='pppoe'
+  uci set network.wan.username="$pppoe_username"
+  uci set network.wan.password="$pppoe_password"
+  uci commit network
+  echo "PPPoE 拨号账号已设置。"
+else
+  echo "未配置 PPPoE 拨号。"
 fi
-# 设置主机名
+
+# === 设置主机名 ===
 if [ -n "$hostname" ]; then
- uci set system.@system[0].hostname="$hostname"
- uci commit system
+  uci set system.@system[0].hostname="$hostname"
+  uci commit system
+  echo "主机名设置为 $hostname"
 fi
-# 设置时区
+
+# === 设置时区 ===
 uci set system.@system[0].zonename='Asia/Shanghai'
 uci set system.@system[0].timezone='CST-8'
-EOF
-# 重启网络服务
-/etc/init.d/network restart
-echo "首次启动配置完成！"
+uci commit system
+echo "时区设置为 Asia/Shanghai (CST-8)"
+
+# === 重启网络服务 ===
+/etc/init.d/network restart >/dev/null 2>&1
+wifi reload >/dev/null 2>&1
+
+echo "✅ 首次启动配置完成！"
