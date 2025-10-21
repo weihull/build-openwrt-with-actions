@@ -2,13 +2,13 @@
 # === 自动化 OpenWrt 首次配置脚本 ===
 
 # === 用户自定义变量 ===
-wlan_name0="MyWiFi_2.4G"
-wlan_name1="MyWiFi_5G"
-wlan_password="mypassword"     # 至少 8 位，留空为无密码
-root_password="admin123"       # 管理员密码，留空则不修改
+wlan_name0="ImmortalWrt"
+wlan_name1="ImmortalWrt"
+wlan_password=""     # 至少 8 位，留空为无密码
+root_password=""       # 管理员密码，留空则不修改
 lan_ip_address="192.168.1.1"
-pppoe_username="user123"
-pppoe_password="pass123"
+pppoe_username=""
+pppoe_password=""
 hostname="ImmortalWrt"
 
 echo "开始执行首次配置脚本..."
