@@ -19,3 +19,4 @@ echo 'src-git kiddin9 https://github.com/kiddin9/kwrt-packages' >>feeds.conf.def
 #git clone https://github.com/kenzok8/small.git package/small
 #git clone https://github.com/SunBK201/UA3F.git package/UA3F
 #git clone https://github.com/stevenjoezhang/luci-app-adguardhome.git package/ADGH
+#git clone https://github.com/kiddin9/kwrt-packages.git package/kwrt-packages
