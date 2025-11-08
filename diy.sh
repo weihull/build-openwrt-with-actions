@@ -12,7 +12,7 @@ sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
 
 # 添加额外的软件包，echo 方式和git clone 方式二选一即可
 #echo 'src-git kenzok8 https://github.com/kenzok8/openwrt-packages' >>feeds.conf.default
-#echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
+echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
 echo 'src-git kiddin9 https://github.com/kiddin9/kwrt-packages' >>feeds.conf.default
 #echo 'src-git UA3F https://github.com/SunBK201/UA3F.git' >>feeds.conf.default
 #git clone https://github.com/kenzok8/openwrt-packages.git package/openwrt-packages
