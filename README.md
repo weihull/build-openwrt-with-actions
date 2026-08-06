@@ -47,10 +47,13 @@
 ## 默认 .config 摘要
 
 - 目标：`ramips/mt7620`，设备 `Xiaomi MiWiFi Mini`
-- 存储：160M 内核空间 / 1600M root 空间
+- 硬件：MT7620A SoC、**128MB DDR2 内存、16MB SPI-NOR Flash**
+- 分区：firmware 分区约 **15.5MB**（内核 + rootfs 全部塞入，实际可用空间很紧张）
 - 主题：`luci-theme-argon`（默认）、`luci-theme-bootstrap`
 - 无线中继：`relayd` + `luci-proto-relay`（支持无线中继/WISP）
 - 基础组件：`luci-app-firewall`、`luci-app-package-manager`、`luci-app-commands`、`wpad-basic`、`wireless-regdb`
+
+> ⚠️ **注意**：小米 Mini 只有 **16MB Flash**，固件容量非常紧张。不要勾选太多插件，否则编译出的固件会超过 Flash 大小无法刷入。建议只保留必需功能，按需增量测试。
 
 ## 常见问题
 
