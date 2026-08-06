@@ -1,17 +1,5 @@
 # 请在下方输入自定义命令(一般用来安装第三方插件)(可以留空)
 
-# ===== OpenWrt 下载镜像源（解决 GitHub Actions 访问官方源 404/403/502）=====
-# 方法1：写入 scripts/localmirrors 文件（download.pl 会读取）
-mkdir -p scripts
-cat > scripts/localmirrors << 'EOF'
-https://mirrors.tuna.tsinghua.edu.cn/openwrt
-https://mirrors.aliyun.com/openwrt
-https://mirrors.nju.edu.cn/openwrt
-EOF
-# 方法2：设置环境变量（本步骤内有效，workflow 顶层 env 已全局设置）
-export DOWNLOAD_MIRROR="https://mirrors.tuna.tsinghua.edu.cn/openwrt;https://mirrors.aliyun.com/openwrt;https://mirrors.nju.edu.cn/openwrt"
-
-
 # 编辑默认的lan口ip地址
 sed -i 's/192.168.1.1/192.168.31.1/g' package/base-files/files/bin/config_generate
 
