@@ -68,16 +68,12 @@ jobs:
           npm_clean: "True"
           os_swap: "True"
 
-      - name: Freeing up disk space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 3072
-          swap-size-mb: 4096
-          remove-dotnet: "true"
-          remove-android: "true"
-          remove-haskell: "true"
-          remove-codeql: "true"
-          remove-docker-images: "true"
+      - name: Freeing up disk space (manual cleanup)
+        run: |
+          # 初始已有 80G+ 可用，仅做保守清理，避免 maximize-build-space 把根分区搞满
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/hostedtoolcache/CodeQL /opt/hostedtoolcache/go /usr/local/.ghcup 2>/dev/null || true
+          sudo docker system prune -af --volumes 2>/dev/null || true
+          df -h / | tail -1
 
       - name: Free up disk space complete
         run: |
@@ -91,23 +87,17 @@ jobs:
           avail_bytes=$(df --output=avail -B1 / | tail -n1 || echo 0)
           avail_gb=$((avail_bytes/1024/1024/1024))
           echo "Available disk space: ${avail_gb} GB"
-          min_gb=55
+          min_gb=8
           if [ "$avail_gb" -lt "$min_gb" ]; then
-            echo "ERROR: 可用磁盘不足（${avail_gb}GB < ${min_gb}GB）。"
-            echo "建议：1) 将仓库设为公开以使用更大构建缓存（如 README 所述）；"
-            echo "      2) 使用自托管 runner 并分配更大磁盘；或"
-            echo "      3) 在构建前减少需要下载的包/禁用 make download。"
+            echo "错误: 可用磁盘不足（${avail_gb}GB < ${min_gb}GB），中止编译。"
             exit 1
           fi
 
       - name: 预清理 openWRT 临时目录（如存在）
         if: always()
-        working-directory: openWRT
         run: |
           echo "清理 openWRT/dl、openWRT/build_dir、openWRT/staging_dir（如存在）以释放空间"
-          rm -rf dl || true
-          rm -rf build_dir || true
-          rm -rf staging_dir || true
+          rm -rf openWRT/dl openWRT/build_dir openWRT/staging_dir || true
 
       - name: 下载编译所需的依赖 (Install the software packages required for compilation)
         run: |
