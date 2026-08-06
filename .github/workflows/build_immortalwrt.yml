@@ -39,8 +39,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: 🚀 编译 (Build)
-    env:
-      DOWNLOAD_MIRROR: "https://mirrors.tuna.tsinghua.edu.cn/openwrt;https://mirrors.aliyun.com/openwrt;https://mirrors.nju.edu.cn/openwrt"
     steps:
       - name: 打印编译环境硬件配置 (Print runner hardware info)
         run: |
