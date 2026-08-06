@@ -40,6 +40,21 @@ jobs:
     runs-on: ubuntu-latest
     name: 🚀 编译 (Build)
     steps:
+      - name: 打印编译环境硬件配置 (Print runner hardware info)
+        run: |
+          echo "===== CPU ====="
+          echo "核数: $(nproc)"
+          lscpu | grep -E "Model name|Architecture|CPU\(s\)|Thread|Core|Socket|MHz" || true
+          echo "===== 内存 ====="
+          free -h
+          echo "===== 磁盘 ====="
+          df -h / | cat
+          echo "===== 系统 ====="
+          uname -a
+          echo "===== 编译器 ====="
+          gcc --version | head -1 || true
+          g++ --version | head -1 || true
+
       - name: Before freeing up disk space
         run: |
           echo "Before freeing up disk space"
