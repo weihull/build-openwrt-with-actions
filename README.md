@@ -8,7 +8,8 @@ fork这个仓库。可选编译immortalwrt或者openwrt。可以上传.config也
 
 ## 默认.config如下
 
-- target x86/x86_64
+- target ramips/mt7620
+- device Xiaomi MiWiFi Mini
 - 160M 内核空间
 - 1600M root空间
   
