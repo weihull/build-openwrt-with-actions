@@ -31,14 +31,16 @@ on:
         type: boolean
         default: false
       skip_download:
-        description: "是否跳过 make download（跳过可显著节省磁盘空间）"
+        description: "是否跳过 make download（跳过可显著节省磁盘空间，但可能导致编译时现场下载失败）"
         type: boolean
-        default: true
+        default: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     name: 🚀 编译 (Build)
+    env:
+      DOWNLOAD_MIRROR: "https://mirrors.tuna.tsinghua.edu.cn/openwrt;https://mirrors.aliyun.com/openwrt;https://mirrors.nju.edu.cn/openwrt"
     steps:
       - name: 打印编译环境硬件配置 (Print runner hardware info)
         run: |
@@ -160,6 +162,16 @@ jobs:
             openWRT/.config
             openWRT/feeds.conf.default
           include-hidden-files: true
+
+      - name: 预下载源码包 (Pre-download packages, retry up to 3 times)
+        if: ${{inputs.skip_download == false}}
+        working-directory: openWRT
+        run: |
+          for i in 1 2 3; do
+            echo "===== make download 第 $i 次尝试 ====="
+            make download -j$(nproc) V=s && break
+            echo "===== 第 $i 次下载失败，重试... ====="
+          done
 
       - name: 多线程编译 openWRT (Build openWRT multithreading)
         if: ${{inputs.multithreading == true}}
