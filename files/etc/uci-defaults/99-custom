@@ -9,7 +9,7 @@ root_password=""       # 管理员密码，留空则不修改
 lan_ip_address="192.168.31.1"
 pppoe_username=""
 pppoe_password=""
-hostname="Xiaomi Mini"
+hostname="Xiaomi-Mini"
 
 echo "开始执行首次配置脚本..."
 
