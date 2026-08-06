@@ -98,12 +98,9 @@ jobs:
 
       - name: 预清理 openWRT 临时目录（如存在）
         if: always()
-        working-directory: openWRT
         run: |
           echo "清理 openWRT/dl、openWRT/build_dir、openWRT/staging_dir（如存在）以释放空间"
-          rm -rf dl || true
-          rm -rf build_dir || true
-          rm -rf staging_dir || true
+          rm -rf openWRT/dl openWRT/build_dir openWRT/staging_dir || true
 
       - name: 下载编译所需的依赖 (Install the software packages required for compilation)
         run: |
