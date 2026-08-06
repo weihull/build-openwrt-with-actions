@@ -2,14 +2,14 @@
 # === 自动化 OpenWrt 首次配置脚本 ===
 
 # === 用户自定义变量 ===
-wlan_name0="ImmortalWrt"
-wlan_name1="ImmortalWrt"
+wlan_name0="MIWiFi"
+wlan_name1="MIWiFi"
 wlan_password=""     # 至少 8 位，留空为无密码
 root_password=""       # 管理员密码，留空则不修改
-lan_ip_address="192.168.1.1"
+lan_ip_address="192.168.31.1"
 pppoe_username=""
 pppoe_password=""
-hostname="ImmortalWrt"
+hostname="Xiaomi Mini"
 
 echo "开始执行首次配置脚本..."
 
@@ -95,7 +95,5 @@ uci commit system
 echo "时区设置为 Asia/Shanghai (CST-8)"
 
 # === 重启网络服务 ===
-/etc/init.d/network restart >/dev/null 2>&1
-wifi reload >/dev/null 2>&1
 
 echo "✅ 首次启动配置完成！"
