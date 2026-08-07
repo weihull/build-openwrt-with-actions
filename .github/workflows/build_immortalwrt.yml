@@ -161,15 +161,25 @@ jobs:
             openWRT/feeds.conf.default
           include-hidden-files: true
 
-      - name: 预下载源码包 (Pre-download packages, retry up to 3 times)
+      - name: 预下载源码包 (Pre-download packages, retry up to 5 times)
         if: ${{inputs.skip_download == false}}
         working-directory: openWRT
         run: |
-          for i in 1 2 3; do
-            echo "===== make download 第 $i 次尝试 ====="
-            make download -j$(nproc) V=s && break
-            echo "===== 第 $i 次下载失败，重试... ====="
+          # make download 会跳过已下载的包，重复执行只下载缺失的；
+          # 并行度限制为 8，避免高并发触发 CDN 限流(403)
+          JOBS=$(nproc)
+          [ "$JOBS" -gt 8 ] && JOBS=8
+          for i in 1 2 3 4 5; do
+            echo "===== make download 第 $i 次尝试 (并行 $JOBS) ====="
+            if make download -j$JOBS V=s; then
+              echo "全量下载成功"
+              break
+            fi
+            echo "===== 第 $i 次下载失败，5 秒后重试... ====="
+            sleep 5
           done
+          echo "===== 下载完成，dl 目录文件数 ====="
+          ls dl/ 2>/dev/null | wc -l
 
       - name: 多线程编译 openWRT (Build openWRT multithreading)
         if: ${{inputs.multithreading == true}}
